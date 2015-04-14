@@ -46,10 +46,10 @@ class OplogWatcher(object):
             try:
                 cursor = oplog.find(filter, tailable=True, await_data=True)
                 while cursor.alive:
-					for op in cursor:
-						ts = op['ts']
-						id = self.__get_id(op)
-						self.all_with_noop(ns=op['ns'], ts=ts, op=op['op'], id=id, raw=op)
+                    for op in cursor:
+                        ts = op['ts']
+                        id = self.__get_id(op)
+                        self.all_with_noop(ns=op['ns'], ts=ts, op=op['op'], id=id, raw=op)
             except AutoReconnect:
                 time.sleep(self.poll_time)
 
