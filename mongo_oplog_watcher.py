@@ -44,15 +44,12 @@ class OplogWatcher(object):
                 filter = {'ns': self._ns_filter}
             filter['ts'] = {'$gt': ts}
             try:
-                cursor = oplog.find(filter, tailable=True)
-                while True:
-                    for op in cursor:
-                        ts = op['ts']
-                        id = self.__get_id(op)
-                        self.all_with_noop(ns=op['ns'], ts=ts, op=op['op'], id=id, raw=op)
-                    time.sleep(self.poll_time)
-                    if not cursor.alive:
-                        break
+                cursor = oplog.find(filter, tailable=True, await_data=True)
+                while cursor.alive:
+					for op in cursor:
+						ts = op['ts']
+						id = self.__get_id(op)
+						self.all_with_noop(ns=op['ns'], ts=ts, op=op['op'], id=id, raw=op)
             except AutoReconnect:
                 time.sleep(self.poll_time)
 
